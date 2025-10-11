@@ -21,7 +21,7 @@ func main() {
 
 	srv := server.New(logger)
 
-	if e := server.Start(srv); e != nil {
+	if e := srv.Start(); e != nil {
 		slog.Error("failed to start server:", slog.String("cause", e.Error()))
 		os.Exit(notOk)
 	}
