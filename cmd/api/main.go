@@ -1,30 +1,28 @@
 package main
 
 import (
-	"fmt"
 	"log/slog"
 	"os"
 
-	"github.com/w40141/gin-sample/internal/router"
-	"github.com/w40141/gin-sample/internal/web"
+	"github.com/w40141/gin-sample/internal/server"
+	"github.com/w40141/gin-sample/internal/util"
 )
+
+const notOk = 1
 
 func main() {
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 	slog.SetDefault(logger)
 
-	cfg, e := router.LoadConfig()
-	if e != nil {
-		logger.Error(fmt.Sprintf("failed to load config: %v", e))
-		os.Exit(1)
+	if e := util.Initialize(); e != nil {
+		slog.Error("failed to initialize util:", slog.String("cause", e.Error()))
+		os.Exit(notOk)
 	}
 
-	r := web.SetupRouter(cfg, logger)
+	srv := server.New(logger)
 
-	r = web.Handler(r)
-
-	if e := cfg.Start(r); e != nil {
-		logger.Error(fmt.Sprintf("failed to run server: %v", e))
-		os.Exit(1)
+	if e := server.Start(srv); e != nil {
+		slog.Error("failed to start server:", slog.String("cause", e.Error()))
+		os.Exit(notOk)
 	}
 }

@@ -1,4 +1,5 @@
-package web
+// Package router はHTTPルーターの設定とミドルウェアを提供する
+package router
 
 import (
 	"log/slog"
@@ -6,14 +7,14 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/w40141/gin-sample/internal/router"
+	"github.com/w40141/gin-sample/internal/util"
 )
 
 // Logger はリクエストとレスポンスのログを記録するミドルウェアです。
-func Logger(cfg router.Config, l *slog.Logger) gin.HandlerFunc {
+func Logger(l *slog.Logger) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		start := time.Now().In(cfg.Loc())
-		startStr := start.Format(cfg.TimeFormatter())
+		start := util.Now()
+		startStr := start.Format(time.RFC3339)
 		path := c.Request.URL.Path
 		query := c.Request.URL.RawQuery
 		method := c.Request.Method
@@ -37,7 +38,7 @@ func Logger(cfg router.Config, l *slog.Logger) gin.HandlerFunc {
 
 		c.Next()
 
-		end := time.Now().In(cfg.Loc())
+		end := util.Now()
 		latency := end.Sub(start)
 		status := c.Writer.Status()
 
