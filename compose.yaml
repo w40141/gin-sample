@@ -1,0 +1,8 @@
+name: gin-sample
+services:
+  app:
+    build:
+      context: .
+      dockerfile: ./docker/cmd.api.Dockerfile
+    ports:
+      - "8081:8081"
