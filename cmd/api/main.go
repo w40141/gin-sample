@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"log/slog"
 	"os"
 
@@ -8,21 +9,17 @@ import (
 	"github.com/w40141/gin-sample/internal/util"
 )
 
-const notOk = 1
-
 func main() {
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 	slog.SetDefault(logger)
 
 	if e := util.Initialize(); e != nil {
-		slog.Error("failed to initialize util:", slog.String("cause", e.Error()))
-		os.Exit(notOk)
+		log.Fatal("failed to initialize util: ", e)
 	}
 
 	srv := server.New(logger)
 
 	if e := srv.Start(); e != nil {
-		slog.Error("failed to start server:", slog.String("cause", e.Error()))
-		os.Exit(notOk)
+		log.Fatal("failed to start server: ", e)
 	}
 }

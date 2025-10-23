@@ -21,10 +21,8 @@ func SetupRouterGin(logger *slog.Logger) *gin.Engine {
 
 // handler は基本的なハンドラーを設定します。
 func handler(r *gin.Engine) *gin.Engine {
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "pong",
-		})
+	r.GET("/checkhealth", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{})
 	})
 
 	return r

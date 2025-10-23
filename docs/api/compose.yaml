@@ -1,0 +1,37 @@
+name: openapi
+services:
+  ui:
+    environment:
+      SWAGGER_JSON: /api/schema.yaml
+    image: swaggerapi/swagger-ui
+    ports:
+      - "18081:8080"
+    profiles:
+      - edit
+    volumes:
+      - type: bind
+        source: ./schema.yaml
+        target: /api/schema.yaml
+  editor:
+    environment:
+      SWAGGER_FILE: /api/schema.yaml
+    image: swaggerapi/swagger-editor
+    ports:
+      - "18082:8080"
+    profiles:
+      - edit
+    volumes:
+      - type: bind
+        source: ./schema.yaml
+        target: /api/schema.yaml
+  mock:
+    command: 'mock -h 0.0.0.0 /api/schema.yaml'
+    image: stoplight/prism
+    ports:
+      - '4010:4010'
+    profiles:
+      - mock
+    volumes:
+      - type: bind
+        source: ./schema.yaml
+        target: /api/schema.yaml

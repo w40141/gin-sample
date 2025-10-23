@@ -1,0 +1,238 @@
+openapi: 3.0.4
+info:
+  title: gin sample
+  version: 0.0.1
+servers:
+  - url: https://petstore3.swagger.io/api/v3
+tags:
+  - name: auth
+  - name: todo
+  - name: misc
+paths:
+  /checkhealth:
+    get:
+      tags:
+        - misc
+      description: Check API health
+      operationId: checkHealth
+      responses:
+        200:
+          $ref: "#/components/responses/200"
+        500:
+          $ref: "#/components/responses/500"
+  /register:
+    post:
+      tags:
+        - auth
+      description: Register a new user
+      operationId: register
+      requestBody:
+        $ref: "#/components/requestBodies/RegisterUser"
+      responses:
+        201:
+          $ref: "#/components/responses/201"
+        400:
+          $ref: "#/components/responses/400"
+        500:
+          $ref: "#/components/responses/500"
+  /login:
+    post:
+      tags:
+        - auth
+      description: Login a user
+      operationId: login
+      requestBody:
+        $ref: "#/components/requestBodies/RegisterUser"
+      responses:
+        200:
+          $ref: "#/components/responses/LoginUser"
+        400:
+          $ref: "#/components/responses/400"
+        401:
+          $ref: "#/components/responses/401"
+        500:
+          $ref: "#/components/responses/500"
+  /todos:
+    get:
+      tags:
+        - todo
+      description: Get all todos
+      operationId: getTodos
+      responses:
+        200:
+          $ref: "#/components/responses/Todos"
+        401:
+          $ref: "#/components/responses/401"
+        500:
+          $ref: "#/components/responses/500"
+    post:
+      tags:
+        - todo
+      description: Create a new todo
+      operationId: createTodo
+      responses:
+        201:
+          $ref: "#/components/responses/201"
+        400:
+          $ref: "#/components/responses/400"
+        401:
+          $ref: "#/components/responses/401"
+        500:
+          $ref: "#/components/responses/500"
+components:
+  # parameters:
+  requestBodies:
+    RegisterUser:
+      description: User registration data
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+              password:
+                type: string
+            required:
+              - username
+              - password
+  responses:
+    LoginUser:
+      description: User login response
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/JWT"
+    Todos:
+      description: List of todos
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Todos"
+    200:
+      description: OK response
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Ok"
+    201:
+      description: Created response
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Created"
+    204:
+      description: No Content response
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/NoContent"
+    400:
+      description: Bad Request
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    401:
+      description: Unauthorized
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    403:
+      description: Forbidden
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    404:
+      description: Not Found
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    500:
+      description: Internal Server Error
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Error"
+  schemas:
+    JWT:
+      type: object
+      properties:
+        token:
+          type: string
+          description: JWT token
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+    Todos:
+      type: array
+      items:
+        $ref: '#/components/schemas/Todo'
+    Todo:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        title:
+          $ref: '#/components/schemas/Title'
+        status:
+          $ref: '#/components/schemas/Status'
+    UUID:
+      type: string
+      format: uuid
+      description: UUID of the todo item
+      example: 123e4567-e89b-12d3-a456-426614174000
+    Title:
+      type: string
+      description: Title of the todo item
+      example: Buy groceries
+    Status:
+      type: string
+      description: Status of the todo item
+      enum:
+        - pending
+        - completed
+      example: pending
+    Ok:
+      type: object
+      description: OK response
+    Created:
+      type: object
+      description: Created response
+    NoContent:
+      type: object
+      description: No Content response
+    Error:
+      type: object
+      properties:
+        title:
+          type: string
+          description: Short error title
+          example: Something went wrong
+        instance:
+          type: string
+          description: |
+            A URI reference that identifies the specific occurrence of the problem.
+          example: /todos/123
+        type:
+          type: string
+          description: A URI reference that identifies the problem type.
+          example: https://example.com/probs/out-of-credit
+      required:
+        - title
+        - instance
+  securitySchemes:
+    petstore_auth:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: https://petstore3.swagger.io/oauth/authorize
+          scopes:
+            "write:pets": modify pets in your account
+            "read:pets": read your pets
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header
